@@ -1,0 +1,3 @@
+ata0-master: type=disk, mode=flat, path="install.img"
+cpu: count=1, ips=60000000
+boot:disk
