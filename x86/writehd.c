@@ -59,6 +59,55 @@ int recurse_write(char *in,char *name){
 	closedir(d);
 	return 1;
 }
+int recurse_writeFile(char *in,char *name){
+	DIR *d = opendir(in);
+	struct dirent *ent;
+	if(!d){
+		printf("Failed to open dir %s\n",in);
+		perror("Reason:Failed to open dir");
+		return -1;
+	}
+	while((ent = readdir(d))){
+		if(ent->d_type == DT_REG){
+                        char *path = malloc(1024);
+                        sprintf(path,"/%s/%s",in,ent->d_name);
+                        char *fpath = malloc(1024);
+                        sprintf(fpath,"%s/%s",in,ent->d_name);
+                        FILE *contf = fopen(fpath,"rb");
+			if(!contf){
+				printf("Failed to open:%s\n",fpath);
+				return -1;
+			}
+                        fseek(contf,0,SEEK_END);
+                        int size = ftell(contf);
+                        fseek(contf,0,SEEK_SET);
+                        uint8_t *cont = malloc(size);
+                        fread(cont,1,size,contf);
+                        printf("Write File %s\n",path);
+			FILE *f = fopen(name,"r+b");
+			if(!f){
+				printf("Failed to open %s\n",name);
+				return -1;
+			}
+			printf("Writing %s\n",path);
+                        int val = write_file(path,cont,size,f);
+			fclose(f);
+		}
+	}
+	close(d);
+	free(ent);
+	d = opendir(in);
+	while((ent = readdir(d))){
+		if(ent->d_type == DT_DIR){
+			if(strcmp(ent->d_name,".") == 0 || strcmp(ent->d_name,"..") == 0)
+				continue;
+			char *path = malloc(1024);
+			sprintf(path,"%s/%s",in,ent->d_name);
+			recurse_writeFile(path,name);
+		}
+	}
+	return 1;
+}
 int main(int argc,char **argv){
 	if(argc < 3)
 		return -1;
@@ -75,6 +124,7 @@ int main(int argc,char **argv){
 	sprintf(path,"/%s",argv[1]);
 	__mkdir(path,f);
 	fclose(f); 
-	int ret = recurse_write(argv[1],argv[2]) ? 0 : -1;
-	return ret;
+	int ret1 = recurse_write(argv[1],argv[2]) ? 0 : -1;
+	int ret2 = recurse_writeFile(argv[1],argv[2]) ? 0 : - 1;
+	return !(ret1 == 0 && ret2 == 0);
 }

@@ -18,6 +18,7 @@ struct tree_ent{
 #define __TYPE_DIR 0 /*Directory type(as dirhdr as well as filehdr and ent*/
 #define __TYPE_FILE 1 /*File type only has ent and filehdr*/
 #define __TYPE_DEV 2 /*Device type CURRENTLY UNUSED*/
+#define __TYPE_DATA 3 /*Data section of file no fhdr*/
 /*
 *struct tee_filehdr
 *Placed at offset sizeof(struct tree_ent) contains info for files and directories
@@ -26,6 +27,9 @@ struct tree_filehdr{
 	uint8_t alloc;/*Is this allocated*/
 	uint8_t namelen;/*Length of the name of this file*/
 	uint8_t name[80];/*Name of this file*/
+};
+struct tree_fexclusive{
+	uint32_t nxtFLba;
 };
 /*
 *struct tree_dirhdr
@@ -89,10 +93,11 @@ int mkdir(const char *name);
 */
 DIR *opendir(const char *name);
 #else
-struct __DIR{
+typedef struct __DIR{
 	struct tree_ent *ent;
 	struct tree_filehdr *fhdr;
 	struct tree_dirhdr *dhdr;
-};
+}*__DIR;
+int write_file(const char *path,void *dstpntr,int n,FILE *f);
 #endif
 #endif
