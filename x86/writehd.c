@@ -83,13 +83,11 @@ int recurse_writeFile(char *in,char *name){
                         fseek(contf,0,SEEK_SET);
                         uint8_t *cont = malloc(size);
                         fread(cont,1,size,contf);
-                        printf("Write File %s\n",path);
 			FILE *f = fopen(name,"r+b");
 			if(!f){
 				printf("Failed to open %s\n",name);
 				return -1;
 			}
-			printf("Writing %s\n",path);
                         int val = write_file(path,cont,size,f);
 			fclose(f);
 		}
@@ -126,5 +124,8 @@ int main(int argc,char **argv){
 	fclose(f); 
 	int ret1 = recurse_write(argv[1],argv[2]) ? 0 : -1;
 	int ret2 = recurse_writeFile(argv[1],argv[2]) ? 0 : - 1;
+	f = fopen(argv[2],"r+b");
+	mkfs(f);
+        fclose(f);
 	return !(ret1 == 0 && ret2 == 0);
 }

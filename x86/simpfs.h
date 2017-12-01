@@ -31,6 +31,9 @@ struct tree_filehdr{
 struct tree_fexclusive{
 	uint32_t nxtFLba;
 };
+struct tree_fend{
+	uint8_t finalBytes;
+};
 /*
 *struct tree_dirhdr
 *Placed at offset sizeof(struct tree_ent) + sizeof(struct tree_filehdr) Only present in dirs

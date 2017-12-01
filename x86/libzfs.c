@@ -460,14 +460,16 @@ int write_ent(struct ent *ent,int lba, int offset){
 
 }
 #endif
-
+#include "lib.h"
 char **sep(const char *str,int c){
 	int i = 0,k = 0,l = 0;
 	char **ret = (char**)malloc(102400);
+	bzero(ret,102400);
 	while(str[i] != 0){
 		while(str[i] == c)
 			i++;
 		ret[l] = malloc(1024);
+		bzero(ret[l],1024);
 		while(str[i] != c && str[i] != 0){
 			ret[l][k] = str[i];
 			k++;
@@ -476,7 +478,7 @@ char **sep(const char *str,int c){
 		l++;
 		k = 0;
 	}
-	ret[l] = (char*)0;
+	ret[l] = 0;
 	return ret;
 }
 #ifdef __BUILD_ZFS

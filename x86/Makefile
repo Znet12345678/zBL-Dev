@@ -8,6 +8,8 @@ all:
 	gcc readpe.c -o readpe
 	gcc -c transcribe.c -o transcribe.o -DBUILD_HOST
 	gcc transcribe.o writehd.c -o writehd -DBUILD_HOST
+	gcc transcribe.o simpfs-ls.c -o simpfs-ls -DBUILD_HOST
+	gcc transcribe.o simpfs-dumpd.c -o simpfs-dumpd -DBUILD_HOST
 	@make -C libc
 #	make -C fs/src
 #	${CC} -c syscalls.c -o syscalls.o ${CFLAGS}
@@ -118,6 +120,7 @@ all:
 	i686-w64-mingw32-gcc -c petest.c -o petest.o -ffreestanding -nostdlib
 	i686-w64-mingw32-ld petest.o -o petest.exe -nostdlib  -Llibc.dos/src -ldosc 
 	cp petest.exe fs/dos 
+	./writehd fs install.img.1
 #	./mkgenfs fs install.img.1
 #	dd if=/dev/zero of=install.img.1 bs=1M count=100
 	./pad install.pre pad.bin
@@ -139,5 +142,6 @@ all:
 	@cat youros.img.1 youros.img.2 > youros.img
 	@rm -f youros.img.2 youros.img.1
 	#make -C fs/src	
+	./writehd fs fs.img
 install:
 	make -C libc install

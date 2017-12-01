@@ -2,6 +2,7 @@
 #define __LIB_H
 #include <stdint.h>
 #include "simpfs.h"
+#define printf(x,...) kprintf(x,__VA_ARGS__)
 int *detect_drives();
 void hello_world();
 int vga_putc(int c,int x,int y);
@@ -70,5 +71,5 @@ static inline uint16_t inw(uint32_t s){
         __asm__ volatile("inw %%dx, %%ax": "=a"(ret):  "d"(s));
         return ret;
 }
-
+void bzero(void *buf,int n);
 #endif
