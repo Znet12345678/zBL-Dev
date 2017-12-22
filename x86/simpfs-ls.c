@@ -27,7 +27,7 @@ int main(int argc,char *argv[]){
 		memcpy(ent,buf,sizeof(*ent));
 		while(ent->alloc && ent->nxtLba != 0){
 			memcpy(fhdr,buf + sizeof(*ent),sizeof(*fhdr));
-			printf("%s\n",fhdr->name,ent->nxtLba);
+			printf("%s\n",fhdr->name);
 			_ata_read_master(buf,ent->nxtLba,f);
 			memcpy(ent,buf,sizeof(*ent));
 		}	

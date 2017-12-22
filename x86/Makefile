@@ -6,10 +6,11 @@ all:
 	rm -f libk.a
 	rm -f *.img
 	gcc readpe.c -o readpe
-	gcc -c transcribe.c -o transcribe.o -DBUILD_HOST
+	gcc -c transcribe.c -o transcribe.o -DBUILD_HOST -g
 	gcc transcribe.o writehd.c -o writehd -DBUILD_HOST
 	gcc transcribe.o simpfs-ls.c -o simpfs-ls -DBUILD_HOST
 	gcc transcribe.o simpfs-dumpd.c -o simpfs-dumpd -DBUILD_HOST
+	gcc transcribe.o simpfs-cp.c -o simpfs-cp -DBUILD_HOST -g
 	@make -C libc
 #	make -C fs/src
 #	${CC} -c syscalls.c -o syscalls.o ${CFLAGS}
@@ -127,7 +128,7 @@ all:
 	cat install.pre pad.bin install.img.1 > install.img.up
 	./pad install.img.up install.img.pad
 	cat install.img.up install.img.pad > install.img
-	rm -f install.img.1 install.img.up install.img.pad
+#	rm -f install.img.1 install.img.up install.img.pad
 	@echo "Install Image is install.img"
 #	@echo "Compiling and archiving libk.a"
 #	@i386-elf-gcc -c libk.c -o libk.o ${CFLAGS}

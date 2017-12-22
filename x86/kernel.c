@@ -76,16 +76,7 @@ int main(){
 		kprintf("Making simple filesystem\n");
 		mkfs();
 	}
-	kprintf("[TMP_DONE]\n");
-	kprintf("Opening\n");
-	int nfd = open("/fs/src/init.c",O_RDONLY);
-	uint8_t *buf = malloc(1024);
-	kprintf("Reading\n");
-	int ret = read(nfd,buf,10);
-	kprintf("%d\n",ret);
-	kprintf("%s\n",buf);
 	kprintf("DONE");
-	while(1);
 	kprintf("Generating devices...\n");
 	init_devs();	
 	//t_readvals();
@@ -151,7 +142,6 @@ int main(){
 //	list("/test/test");
 	//read_file("/fs/src/ls.c",buf);
 	//kprintf("%s\n",buf);
-	__exec("/fs/init.elf");
 	debug("KERNEL","Done");
 	while(1);
 	if(is_zfs() < 0){
