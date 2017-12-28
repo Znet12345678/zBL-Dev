@@ -1,0 +1,88 @@
+2017-12-23 03:43:40.768	    7f3eacb93740	INFO 	logging	contrib/epee/src/mlog.cpp:148	New log categories: *:WARNING,net:FATAL,net.p2p:FATAL,net.cn:FATAL,global:INFO,verify:FATAL,stacktrace:INFO,logging:INFO,msgwriter:INFO
+2017-12-23 03:43:40.768	    7f3eacb93740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Monero 'Helium Hydra' (v0.11.1.0-release)
+2017-12-23 03:43:40.769	    7f3eacb93740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Logging to monero-wallet-cli.log
+2017-12-23 03:43:57.527	    7f3eacb93740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Wallet and key files found, loading...
+2017-12-23 03:44:00.266	    7f3eacb93740	WARN 	wallet.wallet2	src/wallet/wallet2.cpp:2505	Loaded wallet keys file, with public address: 42XJyAADeSoKmzLUE1hA7Y9Y1z8kKzes33ZuhSDeuS4pHXNKu8HVoouVy8EHLawACeiByjWw8PkuGGhxx48wWSBrB8XsC3n
+2017-12-23 03:44:00.644	    7f3eacb93740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Opened wallet: 42XJyAADeSoKmzLUE1hA7Y9Y1z8kKzes33ZuhSDeuS4pHXNKu8HVoouVy8EHLawACeiByjWw8PkuGGhxx48wWSBrB8XsC3n
+2017-12-23 03:44:00.644	    7f3eacb93740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	**********************************************************************
+Use "help" command to see the list of available commands.
+**********************************************************************
+2017-12-23 03:44:00.645	    7f3eacb93740	ERROR	msgwriter	src/common/scoped_message_writer.h:102	Error: wallet failed to connect to daemon: http://localhost:18081. Daemon either is not started or wrong port was passed. Please make sure daemon is running or restart the wallet with the correct daemon address.
+2017-12-23 03:44:00.646	    7f3eacb93740	ERROR	msgwriter	src/common/scoped_message_writer.h:102	Error: wallet failed to connect to daemon: http://localhost:18081. Daemon either is not started or wrong port was passed. Please make sure daemon is running or restart the wallet with the correct daemon address.
+2017-12-23 03:44:00.646	    7f3eacb93740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Background refresh thread started
+2017-12-23 03:44:09.525	    7f3eacb93740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	42XJyAADeSoKmzLUE1hA7Y9Y1z8kKzes33ZuhSDeuS4pHXNKu8HVoouVy8EHLawACeiByjWw8PkuGGhxx48wWSBrB8XsC3n
+2017-12-23 03:46:16.862	    7f3eacb93740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	42XJyAADeSoKmzLUE1hA7Y9Y1z8kKzes33ZuhSDeuS4pHXNKu8HVoouVy8EHLawACeiByjWw8PkuGGhxx48wWSBrB8XsC3n
+2017-12-23 03:50:09.602	    7f3eacb93740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Commands: 
+  address              Show current wallet public address
+  address_book         address_book [(add (<address> [pid <long or short payment id>])|<integrated address> [<description possibly with whitespaces>])|(delete <index>)] - Print all entries in the address book, optionally adding/deleting an entry to/from it
+  balance              Show current wallet balance
+  bc_height            Show blockchain height
+  check_tx_key         Check amount going to <address> in <txid>
+  check_tx_proof       Check tx proof for payment going to <address> in <txid>
+  donate               donate [<ring_size>] <amount> [payment_id] - Donate <amount> to the development team (donate.getmonero.org)
+  export_key_images    Export a signed set of key images
+  export_outputs       Export a set of outputs owned by this wallet
+  fee                  Print information about fee and current transaction backlog
+  get_tx_key           Get transaction key (r) for a given <txid>
+  get_tx_note          Get a string note for a txid
+  get_tx_proof         Generate a signature to prove payment to <address> in <txid> using the transaction secret key (r) without revealing it
+  help                 Show this help
+  import_key_images    Import signed key images list and verify their spent status
+  import_outputs       Import set of outputs owned by this wallet
+  incoming_transfers   incoming_transfers [available|unavailable] - Show incoming transfers, all or filtered by availability
+  integrated_address   integrated_address [PID] - Encode a payment ID into an integrated address for the current wallet public address (no argument uses a random payment ID), or decode an integrated address to standard address and payment ID
+  locked_transfer      locked_transfer [<ring_size>] <addr> <amount> <lockblocks>(Number of blocks to lock the transaction for, max 1000000) [<payment_id>]
+  password             Change wallet password
+  payment_id           Generate a new random full size payment id - these will be unencrypted on the blockchain, see integrated_address for encrypted short payment ids
+  payments             payments <PID_1> [<PID_2> ... <PID_N>] - Show payments for given payment ID[s]
+  refresh              Synchronize transactions and balance
+  rescan_bc            Rescan blockchain from scratch
+  rescan_spent         Rescan blockchain for spent outputs
+  save                 Save wallet data
+  save_bc              Save current blockchain data
+  save_watch_only      Save a watch-only keys file
+  seed                 Display Electrum-style mnemonic seed
+  set                  Available options: seed language - set wallet seed language; always-confirm-transfers <1|0> - whether to confirm unsplit txes; print-ring-members <1|0> - whether to print detailed information about ring members during confirmation; store-tx-info <1|0> - whether to store outgoing tx info (destination address, payment ID, tx secret key) for future reference; default-ring-size <n> - set default ring size (default is 5); auto-refresh <1|0> - whether to automatically sync new blocks from the daemon; refresh-type <full|optimize-coinbase|no-coinbase|default> - set wallet refresh behaviour; priority [0|1|2|3|4] - default/unimportant/normal/elevated/priority fee; confirm-missing-payment-id <1|0>; ask-password <1|0>; unit <monero|millinero|micronero|nanonero|piconero> - set default monero (sub-)unit; min-outputs-count [n] - try to keep at least that many outputs of value at least min-outputs-value; min-outputs-value [n] - try to keep at least min-outputs-count outputs of at least that value; merge-destinations <1|0> - whether to merge multiple payments to the same destination address; confirm-backlog <1|0> - whether to warn if there is transaction backlog; refresh-from-block-height [n] - set height before which to ignore blocks
+  set_log              set_log <level>|<categories> - Change current log detail (level must be <0-4>)
+  set_tx_note          Set an arbitrary string note for a txid
+  show_transfer        Show information about a transfer to/from this address
+  show_transfers       show_transfers [in|out|pending|failed|pool] [<min_height> [<max_height>]] - Show incoming/outgoing transfers within an optional height range
+  sign                 Sign the contents of a file
+  sign_transfer        Sign a transaction from a file
+  spendkey             Display private spend key
+  start_mining         start_mining [<number_of_threads>] - Start mining in daemon
+  status               Show wallet status information
+  stop_mining          Stop mining in daemon
+  submit_transfer      Submit a signed transaction from a file
+  sweep_all            sweep_all [ring_size] address [payment_id] - Send all unlocked balance to an address
+  sweep_below          sweep_below <amount_threshold> [ring_size] address [payment_id] - Send all unlocked outputs below the threshold to an address
+  sweep_unmixable      Send all unmixable outputs to yourself with ring_size 1
+  transfer             transfer [<priority>] [<ring_size>] <address> <amount> [<payment_id>] - Transfer <amount> to <address>. <priority> is the priority of the transaction. The higher the priority, the higher the fee of the transaction. Valid values in priority order (from lowest to highest) are: unimportant, normal, elevated, priority. If omitted, the default value (see the command "set priority") is used. <ring_size> is the number of inputs to include for untraceability. Multiple payments can be made at once by adding <address_2> <amount_2> etcetera (before the payment ID, if it's included)
+  transfer_original    Same as transfer, but using an older transaction building algorithm
+  unspent_outputs      unspent_outputs [<min_amount> <max_amount>] - Show unspent outputs within an optional amount range
+  verify               Verify a signature on the contents of a file
+  viewkey              Display private view key
+  
+
+2017-12-23 03:50:16.244	    7f3eacb93740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Balance: 0.000000000000, unlocked balance: 0.000000000000
+2017-12-23 03:55:41.265	    7f3eacb93740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	42XJyAADeSoKmzLUE1hA7Y9Y1z8kKzes33ZuhSDeuS4pHXNKu8HVoouVy8EHLawACeiByjWw8PkuGGhxx48wWSBrB8XsC3n
+2017-12-23 16:30:26.132	    7f3eacb93740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	42XJyAADeSoKmzLUE1hA7Y9Y1z8kKzes33ZuhSDeuS4pHXNKu8HVoouVy8EHLawACeiByjWw8PkuGGhxx48wWSBrB8XsC3n
+2017-12-23 16:30:32.236	    7f3eacb93740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Balance: 0.000000000000, unlocked balance: 0.000000000000
+2017-12-23 17:00:41.909	    7f3eab49c700	ERROR	net.http	contrib/epee/include/net/http_client.h:393	HTTP_CLIENT: Failed to SEND
+2017-12-23 18:26:16.391	    7f3eacb93740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	42XJyAADeSoKmzLUE1hA7Y9Y1z8kKzes33ZuhSDeuS4pHXNKu8HVoouVy8EHLawACeiByjWw8PkuGGhxx48wWSBrB8XsC3n
+2017-12-24 18:42:59.476	    7f8e61921740	INFO 	logging	contrib/epee/src/mlog.cpp:148	New log categories: *:WARNING,net:FATAL,net.p2p:FATAL,net.cn:FATAL,global:INFO,verify:FATAL,stacktrace:INFO,logging:INFO,msgwriter:INFO
+2017-12-24 18:42:59.482	    7f8e61921740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Monero 'Helium Hydra' (v0.11.1.0-release)
+2017-12-24 18:42:59.483	    7f8e61921740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Logging to monero-wallet-cli.log
+2017-12-24 18:43:06.681	    7f9541870740	INFO 	logging	contrib/epee/src/mlog.cpp:148	New log categories: *:WARNING,net:FATAL,net.p2p:FATAL,net.cn:FATAL,global:INFO,verify:FATAL,stacktrace:INFO,logging:INFO,msgwriter:INFO
+2017-12-24 18:43:06.681	    7f9541870740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Monero 'Helium Hydra' (v0.11.1.0-release)
+2017-12-24 18:43:06.682	    7f9541870740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Logging to monero-wallet-cli.log
+2017-12-24 18:43:14.120	    7f9541870740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Wallet and key files found, loading...
+2017-12-24 18:43:16.619	    7f9541870740	WARN 	wallet.wallet2	src/wallet/wallet2.cpp:2505	Loaded wallet keys file, with public address: 42XJyAADeSoKmzLUE1hA7Y9Y1z8kKzes33ZuhSDeuS4pHXNKu8HVoouVy8EHLawACeiByjWw8PkuGGhxx48wWSBrB8XsC3n
+2017-12-24 18:43:16.983	    7f9541870740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Opened wallet: 42XJyAADeSoKmzLUE1hA7Y9Y1z8kKzes33ZuhSDeuS4pHXNKu8HVoouVy8EHLawACeiByjWw8PkuGGhxx48wWSBrB8XsC3n
+2017-12-24 18:43:16.983	    7f9541870740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	**********************************************************************
+Use "help" command to see the list of available commands.
+**********************************************************************
+2017-12-24 18:43:16.984	    7f9541870740	ERROR	msgwriter	src/common/scoped_message_writer.h:102	Error: wallet failed to connect to daemon: http://localhost:18081. Daemon either is not started or wrong port was passed. Please make sure daemon is running or restart the wallet with the correct daemon address.
+2017-12-24 18:43:16.984	    7f9541870740	ERROR	msgwriter	src/common/scoped_message_writer.h:102	Error: wallet failed to connect to daemon: http://localhost:18081. Daemon either is not started or wrong port was passed. Please make sure daemon is running or restart the wallet with the correct daemon address.
+2017-12-24 18:43:16.985	    7f9541870740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	Background refresh thread started
+2017-12-24 18:43:18.980	    7f9541870740	INFO 	msgwriter	src/common/scoped_message_writer.h:102	42XJyAADeSoKmzLUE1hA7Y9Y1z8kKzes33ZuhSDeuS4pHXNKu8HVoouVy8EHLawACeiByjWw8PkuGGhxx48wWSBrB8XsC3n

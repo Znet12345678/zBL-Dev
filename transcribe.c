@@ -474,7 +474,6 @@ int write_file(const char *path,void *dstpntr,int n,FILE *f){
 	entry->alloc = 1;
 	entry->type = __TYPE_FILE;
 	entry->nxtLba = 0;
-	entry->size = n;
 	struct tree_filehdr *fhdr = malloc(sizeof(*fhdr));
 	fhdr->alloc = 1;
 	fhdr->namelen = strlen(s[i]);

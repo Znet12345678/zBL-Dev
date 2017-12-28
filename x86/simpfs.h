@@ -14,6 +14,7 @@ struct tree_ent{
 	uint8_t alloc;/*Has this block been initialized*/
 	uint8_t type;/*What type is this block*/
 	uint32_t nxtLba;/*What is the next LBA of the next part of this system*/
+	uint64_t size;/*Size of raw data*/
 };
 #define __TYPE_DIR 0 /*Directory type(as dirhdr as well as filehdr and ent*/
 #define __TYPE_FILE 1 /*File type only has ent and filehdr*/
@@ -54,6 +55,9 @@ struct fd{
 	uint32_t tLba;/*Starting lba of file*/
 };
 #ifndef BUILD_HOST
+#define SEEK_CUR 0
+#define SEEK_SET 1
+#define SEEK_END 2
 #define O_RDONLY 0b01/*Read Only*/
 #define O_WRONLY 0b10/*Write Only*/
 #define O_RDWR 0b11/*Read And Write*/

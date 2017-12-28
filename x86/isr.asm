@@ -22,6 +22,7 @@ extern contains_symbol
 extern write
 extern loadPE
 extern gets
+extern tell
 align 4
 hwint:pushad
 cld
@@ -65,6 +66,8 @@ cmp ah,17
 jz _loadPE
 cmp ah,18
 jz _gets
+cmp ah,19
+jz _tell
 mov ebx,'E'
 push ebp
 mov ebp,esp
@@ -128,9 +131,12 @@ push edx
 push ecx
 push ebx
 call lseek
+mov [ebp-4],eax
 nop
 leave
+push eax
 call t_writevals
+pop eax
 iret
 _print:push ebp
 mov ebp,esp
@@ -255,4 +261,11 @@ call gets
 nop
 leave
 call t_writevals
+iret
+_tell:
+push ebp
+mov ebp,esp
+push ebx
+call tell
+mov [ebp-4],eax
 iret

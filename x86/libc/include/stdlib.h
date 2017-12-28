@@ -25,4 +25,6 @@ void *bsearch(const void *key, const void *base,
 void *realloc(void *pntr,size_t s);
 char **sep(const char *str,int c);
 int *loadPE(uint8_t *pntr);
+int lseek(int fd,int n,int mode);
+void bzero(void *pntr,unsigned long n);
 #endif

@@ -1,0 +1,15 @@
+.section .data
+null:.db 0
+str:.str 'Hello \0'
+zasm:.str 'Zach\'s\0'
+world:.str ' world\n\0'
+.section .text
+.global _start
+_start:
+mov eax,str
+int 0x12
+mov eax,zasm
+int 0x12
+mov eax,world
+int 0x12
+ret

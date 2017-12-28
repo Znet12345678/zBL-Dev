@@ -32,9 +32,11 @@ int open(const char *fname,int options){
 	}
 	if(!(options >> 1 & 1)){
 		struct fd *n = getInfo(fname);
-		if(n <= 0)
+		if(!n){
+			kprintf("Failed to open file\n");
+			bzero(n,sizeof(*n));
 			return -1;
-
+		}
 		n->type = options;
 		memcpy(tbl,n,sizeof(*tbl));
 		return i;
@@ -51,6 +53,20 @@ struct fd *getFd(int n){
 		tbl+=sizeof(*tbl);
 	}
 	return tbl;
+}
+int tell(int fd){
+	struct fd *f = getFd(fd);
+	return f->pos;
+}
+int lseek(int fd,int n,int mode){
+	struct fd *pntr = getFd(fd);
+	if(mode == SEEK_CUR);
+	else if (mode == SEEK_END){
+		pntr->pos = fsize(fd);
+	}else if(mode == SEEK_SET){
+		pntr->pos = n;
+	}
+	return pntr->pos;
 }
 /*
  *Gets info from disk to store in a pointer that can be accessed through a file descriptor
@@ -80,7 +96,7 @@ struct fd *getInfo(const char *str){
 	DIR *d = opendir(dpath);
 	if(!d){
 		kprintf("Error opening dir\n");
-		return -1;
+		return 0;
 	}
 	struct tree_ent *ent = malloc(sizeof(*ent));
 	uint8_t *buf = malloc(512);
@@ -331,7 +347,6 @@ DIR *opendir(const char *name){
 						memcpy(ent,buf,sizeof(*ent));
 						memcpy(fhdr,buf + sizeof(*ent),sizeof(*fhdr));
 						memcpy(dhdr,buf + sizeof(*ent) + sizeof(*fhdr),sizeof(*dhdr));
-
 						break;
 					}
 				}
@@ -382,37 +397,22 @@ int fsize(const char *name){
 	memcpy(ent,buf,sizeof(*ent));
 	int prevLba = 0;
 	struct tree_filehdr *fhdr = malloc(sizeof(*fhdr));
-	while(ent->nxtLba != 0){
+	while(ent->alloc){
 		if(ent->type == __TYPE_FILE){
 			memcpy(fhdr,buf + sizeof(*ent),sizeof(*fhdr));
 			if(strcmp(fhdr->name,arr[i]) == 0){
-				break;
+				return ent->size;
 			}
 		}
 		lba = ent->nxtLba;
+		if(lba == 0)
+			return -1;
 		prevLba = ent->nxtLba;
 		_ata_read_master(buf,ent->nxtLba,0);
 		memcpy(ent,buf,sizeof(*ent));
 	}
-	if(!ent->alloc){
-		return -1;
-	}
-	i = 0;
-	_ata_read_master(buf,prevLba,0);
-	struct tree_fexclusive *fex = malloc(sizeof(*fex));
-	memcpy(fex,buf + sizeof(*ent) + sizeof(struct tree_filehdr),sizeof(*fex));
-	lba = fex->nxtFLba;
-	i = 0;
-	while(fex->nxtFLba > 0){
-		_ata_read_master(buf,lba,0);
-		struct tree_ent *tent = malloc(sizeof(*tent));
-		memcpy(tent,buf,sizeof(*tent));
-		memcpy(fex,buf + sizeof(*tent),sizeof(*fex));
-		lba = fex->nxtFLba;
-		i+=512-sizeof(*ent)-sizeof(*fex);
-	}
-	return i;
 
+	return -1;
 }
 /*
  *Reads from n bytes from fd into buf
@@ -442,7 +442,7 @@ int read(int fd,void *pntr,int n){
 		memcpy(ent,buf,sizeof(*ent));
 		int prevLba = 0;
 		struct tree_filehdr *fhdr = malloc(sizeof(*fhdr));
-		while(ent->nxtLba != 0){
+		while(ent->alloc){
 			if(ent->type == __TYPE_FILE){
 				memcpy(fhdr,buf + sizeof(*ent),sizeof(*fhdr));
 				if(strcmp(fhdr->name,arr[i]) == 0){
@@ -450,6 +450,8 @@ int read(int fd,void *pntr,int n){
 				}
 			}
 			lba = ent->nxtLba;
+			if(lba == 0)
+				return -1;
 			prevLba = ent->nxtLba;
 			_ata_read_master(buf,ent->nxtLba,0);
 			memcpy(ent,buf,sizeof(*ent));
@@ -474,12 +476,10 @@ int read(int fd,void *pntr,int n){
 			struct tree_ent *tent = malloc(sizeof(*tent));
 			memcpy(tent,buf,sizeof(*tent));
 			memcpy(fex,buf + sizeof(*tent),sizeof(*fex));
-			if(512-sizeof(*ent)-sizeof(*fex)<(f->pos-i)){
-				lba = fex->nxtFLba;
-				if(lba == 0)
-					return 0;
+			if(512-sizeof(*ent)-sizeof(*fex)>(f->pos-i)){
 				break;
 			}
+			lba = fex->nxtFLba;
 			i+=512-sizeof(*ent)-sizeof(*fex);
 		}
 		/*
@@ -537,7 +537,7 @@ int read(int fd,void *pntr,int n){
 	}else
 		return -2;
 }
-int write(int fd,void *buf,int flags){
+int write(int fd,void *pntr,int n){
 	struct fd *f = getFd(fd);
 	if(f->type >> 1 & 1){
 		char **s = sep(f->name,'/');
@@ -552,10 +552,94 @@ int write(int fd,void *buf,int flags){
 		DIR *d = opendir(path);
 		if(!d)
 			return -1;
+		uint32_t lba = d->dhdr->nxtTreeLba;
+                struct tree_ent *ent = malloc(sizeof(*ent));
+                bzero(ent,sizeof(*ent));
+                uint8_t *buf = malloc(512);
+                bzero(buf,512);
+                _ata_read_master(buf,lba,0);
+                memcpy(ent,buf,sizeof(*ent));
+                int prevLba = 0;
+                struct tree_filehdr *fhdr = malloc(sizeof(*fhdr));
+                while(ent->alloc){
+                        if(ent->type == __TYPE_FILE){
+                                memcpy(fhdr,buf + sizeof(*ent),sizeof(*fhdr));
+                                if(strcmp(fhdr->name,s[i]) == 0){
+                                        break;
+                                }
+                        }
+                        lba = ent->nxtLba;
+			if(lba == 0)
+				return -1;
+                        prevLba = ent->nxtLba;
+                        _ata_read_master(buf,ent->nxtLba,0);
+                        memcpy(ent,buf,sizeof(*ent));
+                }
+                if(!ent->alloc){
+                        return -1;
+                }
+                i = 0;
+                uint32_t offset = 0;
+                /*
+                 *This loop makes it so that we start at the correct lba and offset
+                 *by looping through until we meet or exceed the offset set by the
+                 *file descriptor
+                 */
+                _ata_read_master(buf,prevLba,0);
+                struct tree_fexclusive *fex = malloc(sizeof(*fex));
+                memcpy(fex,buf + sizeof(*ent) + sizeof(struct tree_filehdr),sizeof(*fex));
+                lba = fex->nxtFLba;
+                i = 0;
+		int size = 0;
+                while(i < f->pos){
+                        _ata_read_master(buf,lba,0);
+                        struct tree_ent *tent = malloc(sizeof(*tent));
+                        memcpy(tent,buf,sizeof(*tent));
+			tent->size+=n;
+			if(i == 0)
+				size = tent->size;
+                        memcpy(fex,buf + sizeof(*tent),sizeof(*fex));
+			_ata_write_master(buf,lba);
+                        if(512-sizeof(*ent)-sizeof(*fex)>(f->pos-i)){
+                                break;
+                        }
+			lba = fex->nxtFLba;
+                        i+=512-sizeof(*ent)-sizeof(*fex);
+                }
+		int j = 0;
+		while(j < n){
+			struct tree_ent *ent = malloc(sizeof(*ent));
+			struct tree_fexclusive *fex = malloc(sizeof(*fex));
+			ent->size=size;
+			ent->alloc = 1;
+			ent->type = __TYPE_FILE;
+			ent->nxtLba = 0;
+			fex->nxtFLba = find_free();
+			uint8_t *buf = malloc(512);
+			memcpy(buf,ent,sizeof(*ent));
+			memcpy(buf + sizeof(*ent),fex,sizeof(*fex));
+			if(j + 512-sizeof(*ent)-sizeof(*fex) < n){
+				memcpy(buf + sizeof(*ent) + sizeof(*fex),pntr + j,512-sizeof(*ent)-sizeof(*fex));
+				f->pos+=512-sizeof(*ent)-sizeof(*fex);
+				j+=512-sizeof(*ent)-sizeof(*fex);
+				_ata_write_master(buf,lba);
+			}else{
+				memcpy(buf + sizeof(*ent) + sizeof(*fex),pntr + j,n%(512-sizeof(*ent)-sizeof(*fex)));
+				f->pos+=n%(512-sizeof(*ent)-sizeof(*fex));
+				j+=n%(512-sizeof(*ent)-sizeof(*fex));
+				_ata_write_master(buf,lba);
+				return j;
+			}
+		}
+		return j;
+
 	}
 }
 int close(int fd){
-
+	struct fd *f = getFd(fd);
+	f->alloc = 0;
+	bzero(f,sizeof(*f));
+	return 1;	
 }
 int __exec(const char *path){
 	uint8_t *buf = malloc(fsize(path));
@@ -583,9 +667,7 @@ int exec(const char *path,const char **argv){
 	t_writevals();
 	main(argc,argv);
 }
-int lseek(int fd,int pos, int mode){
 
-}
 void list(const char *path){
 	kprintf("LS %s:\n",path);
 	struct __DIR *d = opendir(path);
@@ -598,7 +680,7 @@ void list(const char *path){
 	struct tree_filehdr *fhdr = malloc(sizeof(*fhdr));
 	struct tree_dirhdr *dhdr = malloc(sizeof(*dhdr));
 	memcpy(ent,buf,sizeof(*ent));
-	while(ent->alloc && ent->nxtLba != 0){
+	while(ent->nxtLba != 0){
 		memcpy(fhdr,buf + sizeof(*ent),sizeof(*fhdr));
 		kprintf("%s\n",fhdr->name);
 		_ata_read_master(buf,ent->nxtLba,0);
