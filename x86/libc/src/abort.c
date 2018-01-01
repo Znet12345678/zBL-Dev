@@ -2,5 +2,7 @@
 #include <stdlib.h>
 void abort(){
 	printf("abort()");
-	exec("/fs/init.elf");
+	const char *argv = "/fs/init.elf";
+
+	exec("/fs/init.elf",&argv);
 }

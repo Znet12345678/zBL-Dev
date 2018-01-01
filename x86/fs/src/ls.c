@@ -2,9 +2,9 @@
 int main(int argc,char *argv[]){
 	t_readvals();
 	kprintf("LS:");
-	if(argc != 2){
-		kprintf("Invalid number of args %d\n",argc);
-		return 0;
+	if(argc < 2){
+		list(getenv("PWD"));
+		return 1;
 	}
 	list(argv[1]);
 	return 1;

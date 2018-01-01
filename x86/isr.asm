@@ -121,9 +121,12 @@ push edx
 push ecx
 push ebx
 call exec
+mov [ebp-4],eax
 nop
 leave
+push eax
 call t_writevals
+pop eax
 iret
 _lseek:push ebp
 mov ebp,esp

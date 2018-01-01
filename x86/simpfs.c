@@ -5,6 +5,7 @@
 #include "lib.h"
 #include "mem.h"
 #include "simpfs.h"
+#include "libc/include/environment.h"
 #include <stdint.h>
 /*
  *Finds free block and returns the lba of that block
@@ -33,7 +34,7 @@ int open(const char *fname,int options){
 	if(!(options >> 1 & 1)){
 		struct fd *n = getInfo(fname);
 		if(!n){
-			kprintf("Failed to open file\n");
+//			kprintf("Failed to open file\n");
 			bzero(n,sizeof(*n));
 			return -1;
 		}
@@ -132,6 +133,26 @@ int isSimpfs(){
 	uint8_t * buf = malloc(512);
 	_ata_read_master(buf,0,0);
 	return buf[0] == 0x7f && buf[1] == 'S' && buf[2] == 'I' && buf[3] == 'M' && buf[4] == 'P';
+}
+void setenv(char *name,char *val){
+        struct envVar *top = (struct envVar *)0x00900000;
+        while(top->nxt != 0)
+                top = top->nxt;
+        struct envVar *env = malloc(sizeof(*env));
+        strcpy(env->name,name);
+        strcpy(env->val,val);
+        env->nxt = 0;
+        top->nxt = env;
+}
+
+char *getenv(char *name){
+        struct envVar *top = (struct envVar *)0x00900000;
+        while(top != 0){
+                if(strcmp(top->name,name) == 0)
+                        return top->val;
+                top = top->nxt;
+        }
+        return 0;
 }
 /*
  *Creates the file system
@@ -336,7 +357,8 @@ DIR *opendir(const char *name){
 			_ata_read_master(buf,ent->nxtLba,f);
 			memcpy(ent,buf,sizeof(*ent));
 			int prevAlloc = 1;
-			while(ent->alloc){
+
+			while(ent->alloc == 1){
 				if(ent->type == __TYPE_DIR){
 					memcpy(fhdr,buf + sizeof(*ent),sizeof(*fhdr));
 					if(strcmp(fhdr->name,s[i]) == 0){
@@ -559,7 +581,7 @@ int write(int fd,void *pntr,int n){
                 bzero(buf,512);
                 _ata_read_master(buf,lba,0);
                 memcpy(ent,buf,sizeof(*ent));
-                int prevLba = 0;
+                int prevLba = lba;
                 struct tree_filehdr *fhdr = malloc(sizeof(*fhdr));
                 while(ent->alloc){
                         if(ent->type == __TYPE_FILE){
@@ -570,13 +592,39 @@ int write(int fd,void *pntr,int n){
                         }
                         lba = ent->nxtLba;
 			if(lba == 0)
-				return -1;
+				break;
                         prevLba = ent->nxtLba;
                         _ata_read_master(buf,ent->nxtLba,0);
                         memcpy(ent,buf,sizeof(*ent));
                 }
-                if(!ent->alloc){
-                        return -1;
+                if(!ent->alloc || lba == 0){
+                        ent->nxtLba = find_free();
+			memcpy(buf,ent,sizeof(*ent));
+			_ata_write_master(buf,prevLba);
+			int initLba = ent->nxtLba;
+			free(ent);
+			ent = malloc(sizeof(*ent));
+			ent->alloc = 1;
+			ent->size = n;
+			ent->nxtLba = 0;
+			ent->type = __TYPE_FILE;
+			free(fhdr);
+			fhdr = malloc(sizeof(*fhdr));
+			fhdr->alloc = 1;
+			struct fd *f = getFd(fd);
+			memcpy(fhdr->name,f->name,strlen(f->name));
+			fhdr->namelen = strlen(fhdr->name);
+			struct tree_fexclusive *fex = malloc(sizeof(*fex));
+			fex->nxtFLba = 0;
+			free(buf);
+			buf = malloc(1024);
+			memcpy(buf,ent,sizeof(*ent));
+			memcpy(buf + sizeof(*ent),fhdr,sizeof(*fhdr));
+			memcpy(buf + sizeof(*ent) + sizeof(*fhdr),fex,sizeof(*fex));
+			_ata_write_master(buf,initLba);
+			fex->nxtFLba = find_free();
+			memcpy(buf + sizeof(*ent) + sizeof(*fhdr),fex,sizeof(*fex));
+			_ata_write_master(buf,initLba);
                 }
                 i = 0;
                 uint32_t offset = 0;
@@ -651,8 +699,9 @@ int __exec(const char *path){
 	}
 	int r = read(fd,buf,fsize(path));
 	int (*main)() = exec_elf(0,buf);
-	t_writevals();
+	t_writevals(); 
 	main();
+
 }
 int exec(const char *path,const char **argv){
 	uint8_t *buf = malloc(fsize(path));
@@ -666,6 +715,7 @@ int exec(const char *path,const char **argv){
 	int (*main)(int argc,char **argv) = exec_elf(0,buf);
 	t_writevals();
 	main(argc,argv);
+	t_readvals();
 }
 
 void list(const char *path){
@@ -680,11 +730,14 @@ void list(const char *path){
 	struct tree_filehdr *fhdr = malloc(sizeof(*fhdr));
 	struct tree_dirhdr *dhdr = malloc(sizeof(*dhdr));
 	memcpy(ent,buf,sizeof(*ent));
-	while(ent->nxtLba != 0){
+	while(ent->alloc){
 		memcpy(fhdr,buf + sizeof(*ent),sizeof(*fhdr));
 		kprintf("%s\n",fhdr->name);
 		_ata_read_master(buf,ent->nxtLba,0);
+		if(ent->nxtLba == 0)
+			break;
 		memcpy(ent,buf,sizeof(*ent));
+
 	}
 
 }

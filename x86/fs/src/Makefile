@@ -1,6 +1,6 @@
 CC=i386-elf-gcc
 CFLAGS=-nostdlib -ffreestanding -std=gnu99 -I../..
-ALTCFLAGS=-nostdlib -ffreestanding -std=gnu99
+ALTCFLAGS=-nostdlib -ffreestanding -std=gnu99 -I../../libc/include
 LDFLAGS=-lk -L../.. -nostdlib -T../../linker.ld -lgcc
 CRTBEGIN=$(shell $(CC) -print-file-name=crtbegin.o)
 CRTEND=$(shell $(CC) -print-file-name=crtend.o)
@@ -16,6 +16,7 @@ all:
 	i386-zbl-gcc -c dev.c -o dev.o ${ALTCFLAGS}
 	i386-zbl-gcc -c libctest.c -o libctest.o ${ALTCFLAGS}
 	i386-zbl-gcc -c crash.c -o crash.o ${ALTCFLAGS}
+	i386-zbl-gcc -c sh.c -o sh.o ${ALTCFLAGS}
 	${LD} -Tlinker.2.ld boot.o help.o -o ../exec/help.elf -L../.. -lk -nostdlib
 	${LD} -Tlinker.2.ld boot.o ls.o -o ../exec/ls.elf -L../.. -lk -nostdlib
 	${LD} -Tlinker.ld boot.o  init.o -o ../init.elf -L../.. -lk -nostdlib
@@ -26,6 +27,7 @@ all:
 	i386-zbl-gcc  libctest.o -o ../exec/libctest.elf -L../libc/src -lc -lgcc
 	i386-zbl-gcc  dev.o -o ../exec/dev.elf -lc -lgcc
 	i386-zbl-gcc crash.o -o ../exec/crash.elf -lc -lgcc
+	i386-zbl-gcc sh.o -o ../exec/sh.elf -lc -lgcc
 	@make -C ../kernel/src
 	@make -C ../kernel/modules
 	${CC} -c pmdos.c -o pmdos.o ${CFLAGS} 

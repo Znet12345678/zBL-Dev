@@ -18,7 +18,7 @@ struct mem_part{
 #define NULL 0
 #endif
 void abort();
-void exec(const char *str);
+int exec(const char *str, const char **argv);
 void *bsearch(const void *key, const void *base,
                      size_t nmemb, size_t size,
                      int (*compar)(const void *, const void *));

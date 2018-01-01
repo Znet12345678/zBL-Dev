@@ -3,6 +3,11 @@
 void _error(){
 	int code;
 	kprintf("\n_error()\n");
+	int *pntr;
+	asm("popal");
+	asm("pop %eax");
+	asm("mov %%eax,%0":"=m"(pntr));
+	goto *pntr;
 	while(1);
 }
 int dummy(char *path,int flags,int mode){

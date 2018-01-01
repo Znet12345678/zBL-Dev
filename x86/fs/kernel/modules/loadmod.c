@@ -38,6 +38,7 @@ int load_mod(const char *filename){
 		pntr->module_len = 0;
 		return -1;
 	}
+	close(fd);
 	__asm__("popal");
 	return 1;
 }
