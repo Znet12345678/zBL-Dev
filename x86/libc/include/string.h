@@ -62,6 +62,8 @@ char *strncpy(char *dest,const char *src,size_t n);
 char *strncat(char *dest,const char *src,size_t n);
 char *strchr(const char *str,int c);
 char *strrchr(const char *str,int c);
+int strcasecmp(const char *str1,const char *str2);
+int strncasecmp(const char *str1,const char *str2,size_t n);
 #if defined(__cplusplus)
 }
 #endif

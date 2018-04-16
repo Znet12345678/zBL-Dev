@@ -1,12 +1,12 @@
-STR_OBJS = objs/todo.o objs/bzero.o objs/strlen.o objs/strcpy.o objs/strcat.o objs/strcmp.o objs/strncmp.o objs/memcpy.o objs/memmove.o objs/memset.o objs/strncpy.o objs/strncat.o objs/memcmp.o objs/strchr.o
+STR_OBJS = objs/todo.o objs/bzero.o objs/strlen.o objs/strcasecmp.o objs/strncasecmp.o objs/strcpy.o objs/strcat.o objs/strcmp.o objs/strncmp.o objs/memcpy.o objs/memmove.o objs/memset.o objs/strncpy.o objs/strncat.o objs/memcmp.o objs/strchr.o
 str_LIBRARIES = libstr.a
 KERN_OBJS = objs/print.o objs/libelf.o objs/t_readvals.o objs/t_writevals.o objs/kprintf.o objs/t_putc.o objs/kexec.o objs/fsize.o
 kern_LIBRARIES = libkern.a
 CTYPE_OBJS = objs/isalnum.o objs/isalpha.o objs/iscntrl.o objs/isdigit.o objs/isgraph.o objs/islower.o objs/isupper.o objs/isprint.o objs/ispunct.o objs/isspace.o objs/isxdigit.o objs/tolower.o objs/toupper.o
-STDLIB_OBJS = objs/lseek.o objs/tell.o objs/malloc.o objs/panic.o objs/env.o objs/abort.o objs/qsort.o objs/exec.o objs/open.o objs/read.o objs/atoi.o objs/close.o objs/write.o objs/sep.o objs/loadpe.o objs/gets.o
+STDLIB_OBJS = objs/lseek.o objs/tell.o objs/abs.o objs/malloc.o objs/panic.o objs/env.o objs/abort.o objs/qsort.o objs/exec.o objs/open.o objs/read.o objs/atoi.o objs/close.o objs/write.o objs/sep.o objs/loadpe.o objs/gets.o
 ctype_LIBRARIES = libctype.a
 MAIN_OBJS = ${str_OBJS} ${kern_OBJS} ${ctype_OBJS}
-MATH_OBJS = objs/fact.o objs/sin.o objs/pow.o
+MATH_OBJS = objs/fact.o objs/sin.o objs/pow.o 
 main_LIBRARIES = libc.a
 MATHT_OBJS = objs/factt.o objs/sint.o objs/powt.o
 CC=i386-zbl-gcc
@@ -29,6 +29,8 @@ all:
 	${CC} -c memset.c -o objs/memset.o ${CFLAGS}
 	${CC} -c bzero.c -o objs/bzero.o ${CFLAGS}
 	${CC} -c strchr.c -o objs/strchr.o ${CFLAGS}
+	${CC} -c strcasecmp.c -o objs/strcasecmp.o ${CFLAGS}
+	${CC} -c strncasecmp.c -o objs/strncasecmp.o ${CFLAGS}
 	${AR} rcs libstr.a ${STR_OBJS}
 	${CC} -c print.c -o objs/print.o ${CFLAGS}
 	${CC} -c t_readvals.c -o objs/t_readvals.o ${CFLAGS}
@@ -76,6 +78,7 @@ all:
 	${CC} -c pow.c -o objs/pow.o ${CFLAGS}
 	${CC} -c fact.c -o objs/fact.o ${CFLAGS}
 	${CC} -c sin.c -o objs/sin.o ${CFLAGS}
+	${CC} -c abs.c -o objs/abs.o ${CFLAGS}
 	${AR} rcs libm.a ${MATH_OBJS}
 	gcc -c pow.c -o objs/powt.o  -D__TBUILD
 	gcc -c fact.c -o objs/factt.o  -D__TBUILD

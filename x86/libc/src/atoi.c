@@ -11,7 +11,9 @@ int __pow(int n,int pow){
 }
 int atoi(const char *str){
 	int ret = 0;
-	for(int i = 0; i< strlen(str);i++)
+	for(int i = str[0] == '-' ? 1 : 0; i< strlen(str);i++)
 		ret+=(str[i] - '0') * __pow(10,strlen(str)-i-1);
+	if(str[0] == '-')
+		ret*=-1;
 	return ret;
 }

@@ -1,3 +1,7 @@
+/*
+*PSUEDO Math header
+*Im only in calc 2 so sue me
+*/
 #ifndef __MATH_H
 #define __MATH_H
 #define M_E 2.71828
@@ -65,5 +69,7 @@ double sin(double);
 #ifdef __TBUILD
 int factT(int n);
 double sinT(double n);
+#else
+unsigned int abs(int a);
 #endif
 #endif

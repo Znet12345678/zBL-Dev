@@ -12,6 +12,7 @@ all:
 	gcc transcribe.o simpfs-dumpd.c -o simpfs-dumpd -DBUILD_HOST
 	gcc transcribe.o simpfs-cp.c -o simpfs-cp -DBUILD_HOST -g
 	@make -C libc
+
 #	make -C fs/src
 #	${CC} -c syscalls.c -o syscalls.o ${CFLAGS}
 #	i386-zbl-gcc newlibtest.c -o fs/exec/newlibtest.elf
